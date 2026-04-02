@@ -35,16 +35,37 @@ services:
         condition: service_healthy
     networks:
       - bankapp-nw   
+
   ollama:
     image: ollama/ollama
     container_name: ollama
     ports: 
-      - "11343:11343"
+      - "11434:11434"
     networks: 
       - bankapp-nw
     volumes:
       - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
 
+ # Model loader (VERY IMPORTANT)        
+  ollama-init:
+    image: ollama/ollama
+    container_name: ollama-init
+    environment:
+      - OLLAMA_HOST=ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command: -c "ollama pull tinyllama"
+    networks:
+      - bankapp-nw
 
 networks:
   bankapp-nw:
