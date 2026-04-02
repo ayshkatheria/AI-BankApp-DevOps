@@ -29,11 +29,22 @@ services:
       MYSQL_DATABASE: bankappdb
       MYSQL_PORT: 3306
       MYSQL_USER: root
+      OLLAMA_URL: http://ollama:11434
     depends_on: 
       mysql:
         condition: service_healthy
     networks:
       - bankapp-nw   
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports: 
+      - "11343:11343"
+    networks: 
+      - bankapp-nw
+    volumes:
+      - ollama_data:/root/.ollama
+
 
 networks:
   bankapp-nw:
@@ -41,4 +52,4 @@ networks:
 
 volumes:
   mysql-data:
-
+  ollama_data:
